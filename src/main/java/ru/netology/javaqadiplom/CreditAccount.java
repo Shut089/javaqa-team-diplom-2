@@ -65,7 +65,7 @@ public class CreditAccount extends Account {
     public boolean add(int amount) {
         if (amount <= 0) {
             return false;
-        }
+       }
         balance = amount;
         return true;
     }
