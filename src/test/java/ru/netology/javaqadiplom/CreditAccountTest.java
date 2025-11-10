@@ -1,7 +1,10 @@
 package ru.netology.javaqadiplom;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class CreditAccountTest {
 
@@ -225,6 +228,7 @@ public class CreditAccountTest {
      * на сумму покупки. Если же операция может привести к некорректному
      * состоянию счёта (например, баланс может уйти меньше чем лимит), то операция должна
      * завершиться вернув false и ничего не поменяв на счёте.
+     *
      * @param amount - сумма покупки
      * @return true если операция прошла успешно, false иначе.
      */
@@ -292,6 +296,7 @@ public class CreditAccountTest {
         Assertions.assertTrue(result);
         Assertions.assertEquals(expectedBalance, account.getBalance());
     }
+
     // Превышение кредитного лимита
     @Test
     public void shouldFailPaymentWhenExceedingCreditLimit() {
@@ -356,5 +361,62 @@ public class CreditAccountTest {
         Assertions.assertEquals(balanceBeforePayment, account.getBalance(), "Баланс не должен измениться.");
     }
 
+    /**
+     * Операция расчёта процентов на отрицательный баланс счёта при условии, что
+     * счёт не будет меняться год. Сумма процентов приводится к целому
+     * числу через отбрасывание дробной части (так и работает целочисленное деление).
+     * Пример: если на счёте -200 рублей, то при ставке 15% ответ должен быть -30.
+     * Пример 2: если на счёте 200 рублей, то при любой ставке ответ должен быть 0.
+     *
+     * @return
+     */
+    // Метод корректно обрабатывает стандартные случаи
+    @ParameterizedTest(name = "Баланс: {0}, Ставка: {1} -> Ожидается: {2}")
+    @CsvSource({
+            // Стандартный отрицательный (пример из условий)
+            "-200, 15, -30",
+            // Нулевой баланс (требование условий - 0)
+            "0, 15, 0",
+            // Положительный баланс (требование условий - 0) - !!! ОЖИДАЕТСЯ ПРОВАЛ !!!
+            "200, 15, 0",
+            // Положительный баланс, но большая ставка (требование условий - 0) - !!! ОЖИДАЕТСЯ ПРОВАЛ !!!
+            "500, 50, 0"
+    })
+
+    @DisplayName("Позитивные: Проверка базового расчета и условия 'Баланс >= 0'")
+    public void yearChangePositive(int balance, int rate, int expected) {
+
+        CreditAccount account = new CreditAccount(balance, 5_000, rate);
+
+        int actual = account.yearChange();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    // --- ГРАНИЧНЫЕ ТЕСТЫ: ФОКУС НА ЦЕЛОЧИСЛЕННОМ ДЕЛЕНИИ (TRUNCATION) ---
+    @ParameterizedTest(name = "Баланс: {0}, Ставка: {1} -> Ожидается: {2}")
+    @CsvSource({
+            // Баланс близко к нулю (меньше 100) -> 0
+            "-99, 15, 0",
+            // G2: Баланс ровно -100 -> -1 * 15 = -15
+            "-100, 15, -15",
+            // Отсечение (Trancation). -299 / 100 = -2. -2 * 15 = -30
+            "-299, 15, -30",
+            // Отсечение с большой ставкой. -199 / 100 = -1. -1 * 80 = -80
+            "-199, 80, -80",
+            // Отрицательная ставка (если бы это было разрешено). -200 / 100 * (-5) = 10
+            "-200, -5, 10"  // При текущей реализации конструктора, этот тест не запустится.
+    })
+
+    @DisplayName("Негативные/Граничные: Проверка целочисленного деления и отсечения")
+    public void yearChangeBoundaryAndTruncationShouldBeCorrect(int balance, int rate, int expected) {
+        if (rate < 0) return;
+
+        CreditAccount account = new CreditAccount(balance, 5_000, rate);
+
+        int actual = account.yearChange();
+
+        Assertions.assertEquals(expected, actual);
+    }
 
 }
