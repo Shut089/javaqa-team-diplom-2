@@ -54,6 +54,7 @@ public class BankTest {
 
         Assertions.assertEquals(false, bank.transfer(from, to, 1_000));
         Assertions.assertEquals(1_000, from.getBalance());
+        Assertions.assertEquals(2_000, to.getBalance());
     }
 
     @Test // попытка зачисления недоступной суммы
