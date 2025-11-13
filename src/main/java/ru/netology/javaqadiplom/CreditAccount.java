@@ -8,7 +8,7 @@ package ru.netology.javaqadiplom;
 public class CreditAccount extends Account {
     protected int creditLimit;
 
-    /**
+    /** Выполнил
      * Создаёт новый объект кредитного счёта с заданными параметрами.
      * Если параметры некорректны (кредитный лимит отрицательный и так далее), то
      * должно выкидываться исключения вида IllegalArgumentException.
@@ -17,17 +17,28 @@ public class CreditAccount extends Account {
      * @param rate - неотрицательное число, ставка кредитования для расчёта долга за отрицательный баланс
      */
     public CreditAccount(int initialBalance, int creditLimit, int rate) {
-        if (rate <= 0) {
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException(
+                    "Начальный баланс для счёта не может быть отрицательным, а у вас: " + initialBalance
+            );
+        }
+        if (creditLimit < 0) {
+            throw new IllegalArgumentException(
+                    "Кредитный лимит не может быть отрицательным, а у вас: " + creditLimit
+            );
+        }
+        if (rate < 0) {
             throw new IllegalArgumentException(
                     "Накопительная ставка не может быть отрицательной, а у вас: " + rate
             );
         }
+
         this.balance = initialBalance;
         this.creditLimit = creditLimit;
         this.rate = rate;
     }
 
-    /**
+    /** Выполнил
      * Операция оплаты с карты на указанную сумму.
      * В результате успешного вызова этого метода, баланс должен уменьшиться
      * на сумму покупки. Если же операция может привести к некорректному
@@ -41,16 +52,15 @@ public class CreditAccount extends Account {
         if (amount <= 0) {
             return false;
         }
-        balance = balance - amount;
-        if (balance > -creditLimit) {
-            balance = -amount;
+        if ((balance - amount) >= -creditLimit) {
+            balance = balance - amount;
             return true;
         } else {
             return false;
         }
     }
 
-    /**
+    /** Выполнил
      * Операция пополнения карты на указанную сумму.
      * В результате успешного вызова этого метода, баланс должен увеличиться
      * на сумму покупки. Если же операция может привести к некорректному
@@ -65,8 +75,8 @@ public class CreditAccount extends Account {
     public boolean add(int amount) {
         if (amount <= 0) {
             return false;
-        }
-        balance = amount;
+       }
+        balance = balance + amount;
         return true;
     }
 
@@ -80,10 +90,17 @@ public class CreditAccount extends Account {
      */
     @Override
     public int yearChange() {
+        if (balance >= 0) {
+            return 0;
+        }
         return balance / 100 * rate;
     }
 
     public int getCreditLimit() {
+        return creditLimit;
+    }
+
+    public int getСreditLimit() {
         return creditLimit;
     }
 }
