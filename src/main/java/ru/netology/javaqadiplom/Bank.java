@@ -18,14 +18,8 @@ public class Bank {
             return false;
         }
         if (from.pay(amount)) {
-            if (to.add(amount)) {
-                return true;
-            } else {
-                from.add(amount); // пытаюсь упростить код и не прибегать к параметру balance, чтобы вернуть на from
-                return false;     // деньги, которые по какой угодно причине не были зачислины на to
-            }
-        } else {
-            return false;
+            to.add(amount);
         }
+        return true;
     }
 }
