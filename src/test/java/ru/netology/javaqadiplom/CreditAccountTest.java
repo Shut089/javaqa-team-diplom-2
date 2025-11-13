@@ -141,7 +141,7 @@ public class CreditAccountTest {
 
         Assertions.assertEquals(initialBalance, account.getBalance());
         Assertions.assertEquals(rate, account.getRate());
-        Assertions.assertEquals(creditLimit, account.getСreditLimit());
+        Assertions.assertEquals(creditLimit, account.getCreditLimit());
 
 
     }
@@ -355,7 +355,7 @@ public class CreditAccountTest {
      * Пример 2: если на счёте 200 рублей, то при любой ставке ответ должен быть 0.
      *
      * @return
-    */
+     */
 
     // Тест на положительный баланс — проценты не начисляются
     @Test
