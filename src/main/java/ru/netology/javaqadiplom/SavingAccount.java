@@ -40,6 +40,21 @@ public class SavingAccount extends Account {
                     "Начальный баланс (" + initialBalance + ") должен находиться в пределах [" + minBalance + ", " + maxBalance + "]"
             );
         }
+        if (minBalance < 0) {
+            throw new IllegalArgumentException(
+                    "Минимальный баланс сберегательного счёта не может быть отрицательным, а у вас: " + minBalance
+            );
+        }
+        if (minBalance > maxBalance) {
+            throw new IllegalArgumentException(
+                    "Минимальный баланс (" + minBalance + ") не может быть больше максимального (" + maxBalance + ")"
+            );
+        }
+        if (initialBalance < minBalance || initialBalance > maxBalance) {
+            throw new IllegalArgumentException(
+                    "Начальный баланс (" + initialBalance + ") должен находиться в пределах [" + minBalance + ", " + maxBalance + "]"
+            );
+        }
         this.balance = initialBalance;
         this.minBalance = minBalance;
         this.maxBalance = maxBalance;
@@ -87,7 +102,6 @@ public class SavingAccount extends Account {
         if (amount <= 0) {
             return false;
         }
-
         int newBalance = this.balance + amount;
 
         if (newBalance <= this.maxBalance) {
