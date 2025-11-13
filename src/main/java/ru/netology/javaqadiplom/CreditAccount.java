@@ -99,4 +99,8 @@ public class CreditAccount extends Account {
     public int getCreditLimit() {
         return creditLimit;
     }
+
+    public int getСreditLimit() {
+        return creditLimit;
+    }
 }
